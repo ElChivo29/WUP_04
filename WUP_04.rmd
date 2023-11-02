@@ -1,6 +1,6 @@
 ---
 title: "WUP_04"
-author: "Put your name here!"
+author: "David Santana"
 date: "fall 2023"
 output:
   html_document:
@@ -11,7 +11,7 @@ output:
 require(knitr)
 require(tidyverse)
 require(tigerstats)
-
+GSS=read.csv("GSScsv.csv")
 ```
 
 # Introduction
@@ -20,12 +20,13 @@ require(tigerstats)
 
 The data is in the file GSScsv.csv and came from the 2018 General Social Survey.  The question to answer is to resolve this hypothesis.  
 $H_0$ There is no difference between the average score on the WORDSUM test and level of schooling DEGREE  
-$H_a$ There is a significant difference in average score on the WORDSUM test between at least two levels of DEGREE  
+$H_A$ There is a significant difference in average score on the WORDSUM test between at least two levels of DEGREE  
 
 # Methods
 
 <!--Mention that you intend to use chatGPT to the greatest extent possible. Give credit to chatGPT when you use it to create code in your report. Decide on your methods:  use "variable analysis" or other appropriate descriptors.  Make sure to choose at least one graphical method and at least one numerical method.!-->
 
+the response variable is wordsum(numerical), and the predictor var-DEGREE(CATAGORICAL), and in return we are using Numerical~cat helper file. we will also be using chatgpt to help with rcode during the process.
 # Results
 
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
@@ -36,15 +37,42 @@ $H_a$ There is a significant difference in average score on the WORDSUM test bet
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
+```{r}
+# Example data
+library(ggplot2)
+ggplot(GSS, aes(x = DEGREE, y = WORDSUM)) +
+    geom_boxplot() +
+    labs(x = "DEGREE", y = "WORDSUM") +
+    ggtitle("Box Plot of Reponse Varibale by Category")
+```
+
+using the graph we can see that high school graduates have a difference compared to those with a higher education.
+
 ### Numerical Descriptive Results
 
-<!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
+```{r}
+favstats(WORDSUM~DEGREE,data=GSS)
+```
+this table shows the different degree's median and mean scores. Bachelor, graduate, and junior college all have roughly the same average mean and median scores. they average about 10.  While HS and LT High School have roughly the same scores They average 8.
+
 
 ## Inferential Results
 
 <!--State hypothesis clearly.  Make sure your discussion of the inferential test covers all the aspects that the test output produces, such as test statistic, p-value etc.  Make a decision about the null hypothesis, explain the assumptions on which the selected test/procedure was based, and why the chosen procedure satisfys the assumptions and is appropriate to answer the research question!-->
 
+```{r}
+model1 <- aov(WORDSUM~DEGREE,data=GSS)
+summary.aov(model1)
+```
+
+```{r}
+plot(TukeyHSD(model1))
+print(TukeyHSD(model1))
+```
+This shows the p-value which is 0.000236. Therefore i will reject the null hypothesis. Because it is smaller than 0.05. There is a difference, The only place where there is a difference HS to G, and LTHS to G.
 
 # Discussion and Conclusion
 
-<!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variavbles causes the other, or whether they perhasps are related for some other reason.  Watch the chapter 6 videos from the GeorgeTown videos collection.!-->
+<!--Discussion and conclusion here.  If you found a relationship be sure to consider whether the relationship occurs because one of the variables causes the other, or whether they perhaps are related for some other reason.  Watch the chapter 6 videos from the George Town videos collection.!-->
+
+There is a difference between some of the different levels and school graduates.  Most remained at around the same level after calculating the data.  The only slight difference is from two places, Hs to G, and LTHS to G.
